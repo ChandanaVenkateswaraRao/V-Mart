@@ -1,11 +1,26 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link , useNavigate} from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import { useAuth } from '../context/AuthContext'
+import { auth, signOut } from '../../firebase'
+
 const Navbar = () => {
+  const {user} = useAuth()
+  const navigate = useNavigate()
   const {cartItems} = useCart()
+
+    const handleLogout = async () => {
+    try {
+      await signOut(auth)
+      navigate('/login')
+    } catch (e) {
+      console.error('Logout error:', e)
+    }
+  }
+  
   return (
     <>
-    <div className='navSection'>
+   {user && ( <div className='navSection'>
       <div className="title" >
         <Link to='/'  style={{ color: "white", textDecoration: "none" }}><h2>V-Mart</h2></Link>
         
@@ -15,7 +30,7 @@ const Navbar = () => {
       </div>
       <div className="user">
         <Link  style={{ color: "white", textDecoration: "none" }}><div className='user-details'>
-            SignIN/SignUp
+            <button  onClick={handleLogout}>Logout</button>
         </div></Link>
         
         <Link to = '/Cart'  style={{ color: "white", textDecoration: "none" }}><div className='cart'>
@@ -25,8 +40,8 @@ const Navbar = () => {
         
       </div>
       
-    </div>
-    <div className="subMenu">
+    </div>)}
+    {user && (<div className="subMenu">
         <ul>
            <Link to = '/mobiles'  style={{ color: "white", textDecoration: "none" }}><li>Mobiles</li></Link>
             <Link to = '/Computers'  style={{ color: "white", textDecoration: "none" }}><li>Computers</li></Link>
@@ -37,7 +52,7 @@ const Navbar = () => {
             <Link to = '/AC'  style={{ color: "white", textDecoration: "none" }}> <li>Ac</li></Link>
            <Link to = '/Kichen'  style={{ color: "white", textDecoration: "none" }}> <li>Kitchen</li></Link>
         </ul>
-    </div>
+    </div>)}
     </>
   )
 }
